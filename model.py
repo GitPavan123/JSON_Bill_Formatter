@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 import google.generativeai as genai
 import PIL.Image
 import os
+from dotenv import load_dotenv
 import constants
 
 app = Flask(__name__)
@@ -12,7 +13,7 @@ def generateJSON():
   image_path = "bill.jpg"
   image_file.save(image_path)
   img = PIL.Image.open(image_path)
-  genai.configure(api_key=constants.GOOGLE_GEMINI_API)
+  genai.configure(api_key=os.getenv("GOOGLE_GEMINI_API"))
   model = genai.GenerativeModel(model_name="gemini-1.5-flash")
   response = model.generate_content(["Provide me the json representation of the given bill receipt. If the given image does not have a bill receipt in that edge case alone output 'Sorry i can't find a bill receipt in the image!'. Else only give the json representation of the bill. Include only key informations. dont print '''json at beginning and '''at end. !!!Note: You must provide an appropriate title for the file name that must be relevant to the bill. You must specify the file name at the very beginning of the response which must be enclosed within #. Example: #sample.json# if no bill detected make fileName as #Invalid#",img])
 
