@@ -1,9 +1,8 @@
 from flask import Flask, request, jsonify
 import google.generativeai as genai
 import PIL.Image
-import os
 from dotenv import load_dotenv
-import constants
+import os
 
 app = Flask(__name__)
 

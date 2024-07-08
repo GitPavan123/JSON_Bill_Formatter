@@ -9,8 +9,9 @@ import 'package:json_bill_formatter/image_input.dart';
 import 'package:share_plus/share_plus.dart';
 
 class ResultPage extends StatefulWidget {
-  const ResultPage({super.key, this.imageFile});
+  const ResultPage({super.key, this.imageFile, required this.ip});
   final File? imageFile;
+  final String ip;
   @override
   State<ResultPage> createState() => _ResultPageState();
 }
@@ -23,7 +24,7 @@ class _ResultPageState extends State<ResultPage> {
   bool displayWarning = false;
 
   Future<void> getJsonReceipt() async {
-    String apiEndpoint = "http://192.168.154.53:5000/generateJSON";
+    String apiEndpoint = "http://" + widget.ip + "/generateJSON";
     var request = http.MultipartRequest('POST', Uri.parse(apiEndpoint));
     request.files
         .add(await http.MultipartFile.fromPath('bill', widget.imageFile!.path));

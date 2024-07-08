@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:json_bill_formatter/result_page.dart';
 
@@ -69,6 +70,7 @@ class _ImageInputState extends State<ImageInput> {
 
   @override
   Widget build(BuildContext context) {
+    TextEditingController controller = TextEditingController();
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 60,
@@ -79,83 +81,145 @@ class _ImageInputState extends State<ImageInput> {
         backgroundColor: Colors.black,
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              width: 350,
-              height: 400,
-              decoration: BoxDecoration(
-                  border: Border.all(
-                    color: Colors.black,
-                    width: 1.2,
-                  ),
-                  borderRadius: BorderRadius.circular(15)),
-              child: _image == null
-                  ? GestureDetector(
-                      onTap: _showDialog,
-                      child: const Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.image_outlined, size: 150),
-                            SizedBox(height: 20),
-                            Text("Please upload an image of the bill receipt!")
-                          ],
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: 350,
+                height: 400,
+                decoration: BoxDecoration(
+                    border: Border.all(
+                      color: Colors.black,
+                      width: 1.2,
+                    ),
+                    borderRadius: BorderRadius.circular(15)),
+                child: _image == null
+                    ? GestureDetector(
+                        onTap: _showDialog,
+                        child: const Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.image_outlined, size: 150),
+                              SizedBox(height: 20),
+                              Text(
+                                  "Please upload an image of the bill receipt!")
+                            ],
+                          ),
+                        ),
+                      )
+                    : ClipRRect(
+                        borderRadius: BorderRadius.circular(15),
+                        child: Image.file(_image!, fit: BoxFit.fill),
+                      ),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                child: _image == null
+                    ? const Text("")
+                    : TextFormField(
+                        controller: controller,
+                        cursorColor: Colors.black,
+                        decoration: InputDecoration(
+                          labelText: "IP Address",
+                          labelStyle: TextStyle(color: Colors.black),
+                          border: const OutlineInputBorder().copyWith(
+                            borderRadius: BorderRadius.circular(15),
+                            borderSide:
+                                const BorderSide(width: 1, color: Colors.black),
+                          ),
+                          enabledBorder: const OutlineInputBorder().copyWith(
+                            borderRadius: BorderRadius.circular(15),
+                            borderSide:
+                                const BorderSide(width: 1, color: Colors.black),
+                          ),
+                          focusedBorder: const OutlineInputBorder().copyWith(
+                            borderRadius: BorderRadius.circular(15),
+                            borderSide:
+                                const BorderSide(width: 1, color: Colors.black),
+                          ),
+                          errorBorder: const OutlineInputBorder().copyWith(
+                            borderRadius: BorderRadius.circular(15),
+                            borderSide:
+                                const BorderSide(width: 1, color: Colors.black),
+                          ),
+                          focusedErrorBorder:
+                              const OutlineInputBorder().copyWith(
+                            borderRadius: BorderRadius.circular(15),
+                            borderSide:
+                                const BorderSide(width: 2, color: Colors.black),
+                          ),
                         ),
                       ),
-                    )
-                  : ClipRRect(
-                      borderRadius: BorderRadius.circular(15),
-                      child: Image.file(_image!, fit: BoxFit.fill),
-                    ),
-            ),
-            const SizedBox(
-              height: 30,
-            ),
-            _image == null
-                ? const Text("")
-                : Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 35),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        ElevatedButton(
-                          onPressed: () {
-                            setState(() {
-                              _image = null;
-                            });
-                          },
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.black),
-                          child: const Text(
-                            "Reset",
-                            style: TextStyle(color: Colors.white),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              _image == null
+                  ? const Text("")
+                  : Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 30),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          ElevatedButton(
+                            onPressed: () {
+                              setState(() {
+                                _image = null;
+                              });
+                            },
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.black),
+                            child: const Text(
+                              "Reset",
+                              style: TextStyle(color: Colors.white),
+                            ),
                           ),
-                        ),
-                        ElevatedButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => ResultPage(
-                                        imageFile: _image,
-                                      )),
-                            );
-                          },
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.black),
-                          child: const Text(
-                            "Submit",
-                            style: TextStyle(color: Colors.white),
+                          ElevatedButton(
+                            onPressed: () {
+                              if (controller.text.trim() == "") {
+                                showSnackBar(
+                                    "Error", "Please enter the IP Address!");
+                              } else {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => ResultPage(
+                                            ip: controller.text.trim(),
+                                            imageFile: _image,
+                                          )),
+                                );
+                              }
+                            },
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.black),
+                            child: const Text(
+                              "Submit",
+                              style: TextStyle(color: Colors.white),
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-          ],
+            ],
+          ),
         ),
       ),
+    );
+  }
+
+  void showSnackBar(String? errorMessage1, String errorMessage2) {
+    Get.snackbar(
+      backgroundColor: Colors.black,
+      colorText: Colors.white,
+      errorMessage1!,
+      '$errorMessage2',
+      snackPosition: SnackPosition.BOTTOM,
+      margin: const EdgeInsets.only(bottom: 10, left: 10, right: 10), //
     );
   }
 }
